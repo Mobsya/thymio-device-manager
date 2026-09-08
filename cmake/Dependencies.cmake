@@ -1,0 +1,105 @@
+include("${CMAKE_CURRENT_LIST_DIR}/FetchLocked.cmake")
+foreach(name IN ITEMS aware expected flatbuffers fmt variant pugixml range_v3 spdlog)
+  tdm_archive(${name})
+endforeach()
+
+function(tdm_headers target directory)
+  add_library(${target} INTERFACE)
+  target_include_directories(${target} BEFORE INTERFACE "${directory}")
+endfunction()
+tdm_headers(spdlog "${spdlog_SOURCE_DIR}/include")
+tdm_headers(fmt-header-only "${fmt_SOURCE_DIR}/include")
+target_compile_definitions(fmt-header-only INTERFACE FMT_HEADER_ONLY)
+target_compile_definitions(spdlog INTERFACE SPDLOG_FMT_EXTERNAL)
+target_link_libraries(spdlog INTERFACE fmt-header-only)
+tdm_headers(tl_expected "${expected_SOURCE_DIR}/include")
+tdm_headers(mpark_variant "${variant_SOURCE_DIR}/include")
+tdm_headers(range-v3 "${range_v3_SOURCE_DIR}/include")
+add_library(Boost::asio INTERFACE IMPORTED)
+set_property(TARGET Boost::asio PROPERTY INTERFACE_LINK_LIBRARIES Boost::headers Boost::regex Threads::Threads)
+
+tdm_file(belle belle_header)
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/generated/belle")
+configure_file("${belle_header}" "${CMAKE_BINARY_DIR}/generated/belle/belle.hh" COPYONLY)
+tdm_headers(belle "${CMAKE_BINARY_DIR}/generated")
+
+add_library(pugixml STATIC "${pugixml_SOURCE_DIR}/src/pugixml.cpp")
+target_include_directories(pugixml BEFORE PUBLIC "${pugixml_SOURCE_DIR}/src")
+add_library(flatbuffers STATIC
+  "${flatbuffers_SOURCE_DIR}/src/code_generators.cpp"
+  "${flatbuffers_SOURCE_DIR}/src/idl_parser.cpp"
+  "${flatbuffers_SOURCE_DIR}/src/idl_gen_text.cpp"
+  "${flatbuffers_SOURCE_DIR}/src/reflection.cpp"
+  "${flatbuffers_SOURCE_DIR}/src/util.cpp")
+target_include_directories(flatbuffers BEFORE PUBLIC "${flatbuffers_SOURCE_DIR}/include")
+target_compile_definitions(flatbuffers PUBLIC FLATBUFFERS_LOCALE_INDEPENDENT=0)
+
+# Aware uses Avahi directly on Linux; no DNS-SD compatibility library is needed.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(AVAHI REQUIRED IMPORTED_TARGET avahi-client)
+  file(GLOB aware_backend CONFIGURE_DEPENDS "${aware_SOURCE_DIR}/src/avahi/*.cpp" "${aware_SOURCE_DIR}/src/avahi/detail/*.cpp")
+  set(aware_definition AWARE_HAS_AVAHI)
+  set(aware_libraries PkgConfig::AVAHI)
+else()
+  file(GLOB aware_backend CONFIGURE_DEPENDS "${aware_SOURCE_DIR}/src/bonjour/*.cpp" "${aware_SOURCE_DIR}/src/bonjour/detail/*.cpp")
+  set(aware_definition AWARE_HAS_BONJOUR)
+  if(WIN32)
+    tdm_file(bonjour_header bonjour_header)
+    tdm_file(bonjour_lib bonjour_lib)
+    tdm_file(bonjour_dll bonjour_dll)
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/generated/bonjour")
+    configure_file("${bonjour_header}" "${CMAKE_BINARY_DIR}/generated/bonjour/dns_sd.h" COPYONLY)
+    add_library(bonjour SHARED IMPORTED)
+    set_target_properties(bonjour PROPERTIES IMPORTED_IMPLIB "${bonjour_lib}" IMPORTED_LOCATION "${bonjour_dll}"
+      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/generated/bonjour")
+    set(aware_libraries bonjour ws2_32)
+  else()
+    find_library(TDM_SYSTEM_LIBRARY System REQUIRED)
+    set(aware_libraries "${TDM_SYSTEM_LIBRARY}")
+  endif()
+endif()
+add_library(aware STATIC ${aware_backend}
+  "${aware_SOURCE_DIR}/src/contact.cpp" "${aware_SOURCE_DIR}/src/detail/native_socket.cpp" "${aware_SOURCE_DIR}/src/detail/utility.cpp")
+target_include_directories(aware BEFORE PUBLIC "${aware_SOURCE_DIR}/include")
+target_compile_definitions(aware PUBLIC ${aware_definition})
+target_link_libraries(aware PUBLIC aseba_conf Boost::asio Boost::chrono ${aware_libraries})
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  tdm_archive(libusb)
+  tdm_file(libusb_config libusb_config)
+  configure_file("${libusb_config}" "${CMAKE_BINARY_DIR}/generated/config.h" COPYONLY)
+  set(usb_src "${libusb_SOURCE_DIR}/libusb")
+  add_library(tdm_libusb STATIC
+    "${usb_src}/core.c" "${usb_src}/descriptor.c" "${usb_src}/hotplug.c" "${usb_src}/io.c"
+    "${usb_src}/sync.c" "${usb_src}/strerror.c" "${usb_src}/os/poll_posix.c"
+    "${usb_src}/os/threads_posix.c" "${usb_src}/os/linux_usbfs.c" "${usb_src}/os/linux_netlink.c")
+  target_include_directories(tdm_libusb PUBLIC "${libusb_SOURCE_DIR}" PRIVATE "${usb_src}" "${CMAKE_BINARY_DIR}/generated")
+  target_compile_definitions(tdm_libusb PRIVATE HAVE_SYS_TIME_H HAVE_POLL_H HAVE_DLFCN_H HAVE_DECL_TFD_NONBLOCK
+    HAVE_INTTYPES_H HAVE_MEMORY_H HAVE_STDINT_H HAVE_STDLIB_H HAVE_STRINGS_H HAVE_STRING_H HAVE_STRUCT_TIMESPEC
+    HAVE_SYS_STAT_H HAVE_SYS_TYPES_H THREADS_POSIX POLL_NFDS_TYPE=nfds_t HAVE_UNISTD_H _GNU_SOURCE
+    USBI_TIMERFD_AVAILABLE OS_LINUX HAVE_PIPE2)
+  target_link_libraries(tdm_libusb PUBLIC Threads::Threads)
+endif()
+
+if(BUILD_TESTING)
+  tdm_file(catch2 catch_header)
+  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/generated/catch2")
+  file(READ "${catch_header}" catch_contents)
+  if(APPLE)
+    # Catch 2.4 assumes every Mac is Intel. Clang emits the correct trap for
+    # both Apple Silicon and Intel; leave the verified download untouched.
+    string(REPLACE [[__asm__("int $3\n" : : )]] [[__builtin_debugtrap()]] catch_contents "${catch_contents}")
+  endif()
+  set(catch_generated "${CMAKE_BINARY_DIR}/generated/catch2/catch.hpp")
+  set(catch_existing "")
+  if(EXISTS "${catch_generated}")
+    file(READ "${catch_generated}" catch_existing)
+  endif()
+  if(NOT catch_contents STREQUAL catch_existing)
+    file(WRITE "${catch_generated}" "${catch_contents}")
+  endif()
+  tdm_headers(catch2 "${CMAKE_BINARY_DIR}/generated")
+  # Catch 2.4 predates glibc's dynamic SIGSTKSZ; its signal handler isn't needed here.
+  target_compile_definitions(catch2 INTERFACE CATCH_CONFIG_NO_POSIX_SIGNALS)
+endif()

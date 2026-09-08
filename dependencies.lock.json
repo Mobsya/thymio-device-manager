@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "aseba_revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+  "dependencies": {
+    "aware": {
+      "url": "https://codeload.github.com/Mobsya/aware/tar.gz/94eaf29d7632756796ece07ad80f312e167ba6b0",
+      "revision": "94eaf29d7632756796ece07ad80f312e167ba6b0",
+      "file": "aware.tar.gz",
+      "sha256": "ccd461f4d8ba9e5b86c5c3a16c38692cdcde506ba02b4c4889adccdd729d6702",
+      "kind": "archive"
+    },
+    "expected": {
+      "url": "https://codeload.github.com/TartanLlama/expected/tar.gz/3d741708b967b83ca1e2888239196c4a67f9f9b0",
+      "revision": "3d741708b967b83ca1e2888239196c4a67f9f9b0",
+      "file": "expected.tar.gz",
+      "sha256": "a871aa846d7bb3287c68973581fd0d2f8224a9b9c34c64e36032425096c659b2",
+      "kind": "archive"
+    },
+    "flatbuffers": {
+      "url": "https://codeload.github.com/Mobsya/flatbuffers/tar.gz/daa69a0cdd2069aa05c4e5cbf8b85b8fbd2a9b42",
+      "revision": "daa69a0cdd2069aa05c4e5cbf8b85b8fbd2a9b42",
+      "file": "flatbuffers.tar.gz",
+      "sha256": "2349c8973fadf4c0a263b2c1c176823fce237da4207b892f489fee796fb770d1",
+      "kind": "archive"
+    },
+    "fmt": {
+      "url": "https://codeload.github.com/fmtlib/fmt/tar.gz/7512a55aa3ae309587ca89668ef9ec4074a51a1f",
+      "revision": "7512a55aa3ae309587ca89668ef9ec4074a51a1f",
+      "file": "fmt.tar.gz",
+      "sha256": "a4285773752d666b6b42aefa2eaa0c18b9c140c05f4ea3277b03d0a8f38d369d",
+      "kind": "archive"
+    },
+    "libusb": {
+      "url": "https://codeload.github.com/Mobsya/libusb/tar.gz/eef5d103936dfbf0ee3f732e9eac106ac4bdebcc",
+      "revision": "eef5d103936dfbf0ee3f732e9eac106ac4bdebcc",
+      "file": "libusb.tar.gz",
+      "sha256": "2335f6f6a8633637d32435bd994e1d24368778fceea65d753f091bf95cf3409c",
+      "kind": "archive"
+    },
+    "variant": {
+      "url": "https://codeload.github.com/mpark/variant/tar.gz/0467c3caa408c7fccb09deafad29347bfd3d765a",
+      "revision": "0467c3caa408c7fccb09deafad29347bfd3d765a",
+      "file": "variant.tar.gz",
+      "sha256": "ecc01c47707450cd3631f9912fa24e008f93e5964d14cc2be997ee6be45e62ae",
+      "kind": "archive"
+    },
+    "pugixml": {
+      "url": "https://codeload.github.com/zeux/pugixml/tar.gz/fdf02957533645069bbea7cd2ed85a3014b42cf3",
+      "revision": "fdf02957533645069bbea7cd2ed85a3014b42cf3",
+      "file": "pugixml.tar.gz",
+      "sha256": "cad9cf37ec54bb98b40afc03cd5e2fdc78682fe0f235fd02c575d9b4d9443b83",
+      "kind": "archive"
+    },
+    "range_v3": {
+      "url": "https://codeload.github.com/ericniebler/range-v3/tar.gz/1af081d86f74af83026e111d4463803637f75e58",
+      "revision": "1af081d86f74af83026e111d4463803637f75e58",
+      "file": "range_v3.tar.gz",
+      "sha256": "4e2815711436f5de1af10025c63cf39a184e463cc01ad95e3201037e32d2d150",
+      "kind": "archive"
+    },
+    "spdlog": {
+      "url": "https://codeload.github.com/gabime/spdlog/tar.gz/a7148b718ea2fabb8387cb90aee9bf448da63e65",
+      "revision": "a7148b718ea2fabb8387cb90aee9bf448da63e65",
+      "file": "spdlog.tar.gz",
+      "sha256": "c85af153ad14cf26e32396ba4d19d2371b16f99151f23aa3189e99e161813cdb",
+      "kind": "archive"
+    },
+    "boost": {
+      "url": "https://archives.boost.io/release/1.90.0/source/boost_1_90_0.tar.gz",
+      "revision": "1.90.0",
+      "file": "boost.tar.gz",
+      "sha256": "5e93d582aff26868d581a52ae78c7d8edf3f3064742c6e77901a1f18a437eea9",
+      "kind": "archive"
+    },
+    "openssl": {
+      "url": "https://github.com/openssl/openssl/releases/download/openssl-3.6.4/openssl-3.6.4.tar.gz",
+      "revision": "3.6.4",
+      "file": "openssl.tar.gz",
+      "sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "kind": "archive"
+    },
+    "belle": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/belle/include/belle/belle.hh",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "belle-belle.hh",
+      "sha256": "1fb898ceaf44bb7a98737cbf3e68c6c0c06a7e9c5d4b7c13d8302a8aa5970dbe",
+      "kind": "file"
+    },
+    "catch2": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/catch2/include/catch2/catch.hpp",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "catch2-catch.hpp",
+      "sha256": "a4b90030cb813f0452bb00e97c92ca6c2ecf9386a2f000b6effb8e265a53959e",
+      "kind": "file"
+    },
+    "catch2_license": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/catch2/LICENSE.txt",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "catch2_license-LICENSE.txt",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "kind": "file"
+    },
+    "bonjour_header": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/bonjour/include/dns_sd.h",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "bonjour_header-dns_sd.h",
+      "sha256": "1f710bbf13dabc6de2df4b29006d710fc56082da3903ac641f10b3044e485fa6",
+      "kind": "file"
+    },
+    "bonjour_lib": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/bonjour/lib/x64/dnssd64.lib",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "bonjour_lib-dnssd64.lib",
+      "sha256": "a0322d30e2da24c2f141a4a04af4ee23c4c72921c321da9783501e2a8b017916",
+      "kind": "file"
+    },
+    "bonjour_dll": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/bonjour/lib/x64/dnssd64.dll",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "bonjour_dll-dnssd64.dll",
+      "sha256": "394c23ab20d26bfeb1d4befb1e6ab7708cebaf36338240cdc32e4c29aa0bc9fc",
+      "kind": "file"
+    },
+    "bonjour_msi": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/bonjour/Bonjour64.msi",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "bonjour_msi-Bonjour64.msi",
+      "sha256": "46e31e284da64d6c2d366352b8a8abcf7db28d3e2a870d8fcf15c4a6fe0a6dd1",
+      "kind": "file"
+    },
+    "libusb_config": {
+      "url": "https://raw.githubusercontent.com/Mobsya/aseba/743251f62feeec1bffdbe93df2c5cb6749d39756/third_party/libusb/include/config.h",
+      "revision": "743251f62feeec1bffdbe93df2c5cb6749d39756",
+      "file": "libusb_config-config.h",
+      "sha256": "a36d20d3394aefa00ead0bc9b582c525734c6daa040f291a4f8e6fcafc281454",
+      "kind": "file"
+    }
+  }
+}

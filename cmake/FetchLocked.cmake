@@ -1,0 +1,30 @@
+include(FetchContent)
+file(READ "${CMAKE_CURRENT_LIST_DIR}/../dependencies.lock.json" TDM_LOCK)
+
+function(tdm_archive name)
+  string(JSON filename GET "${TDM_LOCK}" dependencies "${name}" file)
+  string(JSON sha GET "${TDM_LOCK}" dependencies "${name}" sha256)
+  if(NOT EXISTS "${TDM_DOWNLOAD_DIR}/${filename}")
+    message(FATAL_ERROR "Missing ${filename}; run make deps to download locked dependencies.")
+  endif()
+  # Project-owned target definitions avoid running obsolete vendor CMake files.
+  FetchContent_Declare(${name}
+    URL "${TDM_DOWNLOAD_DIR}/${filename}" URL_HASH "SHA256=${sha}"
+    DOWNLOAD_EXTRACT_TIMESTAMP FALSE SOURCE_SUBDIR __tdm_no_subdirectory__)
+  FetchContent_MakeAvailable(${name})
+  set(${name}_SOURCE_DIR "${${name}_SOURCE_DIR}" PARENT_SCOPE)
+endfunction()
+
+function(tdm_file name output)
+  string(JSON filename GET "${TDM_LOCK}" dependencies "${name}" file)
+  string(JSON expected GET "${TDM_LOCK}" dependencies "${name}" sha256)
+  set(path "${TDM_DOWNLOAD_DIR}/${filename}")
+  if(NOT EXISTS "${path}")
+    message(FATAL_ERROR "Missing ${filename}; run make deps first.")
+  endif()
+  file(SHA256 "${path}" actual)
+  if(NOT actual STREQUAL expected)
+    message(FATAL_ERROR "Checksum mismatch for ${filename}")
+  endif()
+  set(${output} "${path}" PARENT_SCOPE)
+endfunction()
