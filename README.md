@@ -20,7 +20,7 @@ Supported release targets:
 
 | Archive | Minimum environment | Runtime prerequisites |
 | --- | --- | --- |
-| Linux x64 | Ubuntu 22.04 or compatible newer Linux | Avahi client libraries, D-Bus and running Avahi daemon; USB permissions |
+| Linux x64 | Ubuntu 26.04 or compatible newer Linux | Avahi client libraries, D-Bus and running Avahi daemon; USB permissions |
 | macOS universal | macOS 11+, Intel or Apple Silicon | System Bonjour and IOKit |
 | Windows x64 | Windows 10/11 | Bonjour service, applicable Thymio USB drivers |
 
@@ -49,16 +49,29 @@ compiler. Sources are fetched at exact revisions with SHA-256 verification.
 The first build downloads approximately 270 MB and needs several GB of disk space.
 No installed Boost, OpenSSL, Aseba checkout, or Git submodules are needed.
 
-Ubuntu 22.04:
+Ubuntu 26.04:
 
 ```sh
 sudo apt-get update
-sudo apt-get install build-essential python3 python3-pip ninja-build curl perl pkg-config libavahi-client-dev avahi-daemon
-python3 -m pip install --user 'cmake>=3.25'
-export PATH="$HOME/.local/bin:$PATH"
+sudo apt-get install build-essential python3 cmake ninja-build curl perl pkg-config libavahi-client-dev avahi-daemon
 make test JOBS=4
 make package JOBS=4
 ```
+
+Arch Linux (x86_64):
+
+```sh
+sudo pacman -Syu --needed base-devel python cmake ninja curl perl pkgconf avahi
+sudo systemctl enable --now avahi-daemon.service
+make test JOBS=4
+make package JOBS=4
+```
+
+Arch's `cmake` package provides the required version without a pip installation.
+The [`avahi` package](https://archlinux.org/packages/extra/x86_64/avahi/files/)
+includes the client libraries, development headers, and daemon; no separate
+`-dev` package is needed. For robot access, install the udev rule and reconnect
+the robot as described above for Ubuntu.
 
 macOS (install Xcode Command Line Tools first):
 
@@ -110,6 +123,9 @@ documented system tools and platform prerequisites are installed. To update a
 dependency, update its revision/URL and verified SHA-256 in `dependencies.lock.json`,
 run `make clean`, and validate all platforms. Do not replace Mobsya forks with
 unmodified upstream releases without testing their local patches.
+
+Linux release packages target Ubuntu 26.04 and allow glibc symbol requirements up
+to 2.43. Compatibility with older Ubuntu releases is no longer guaranteed.
 
 ## CI and releases
 

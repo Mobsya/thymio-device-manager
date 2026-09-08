@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <map>
 #include <range/v3/to_container.hpp>
 #include <range/v3/span.hpp>

@@ -79,8 +79,8 @@ def check(stage):
                 raise RuntimeError('Non-system library path: ' + path)
         versions = subprocess.check_output(['readelf', '--version-info', binary], text=True)
         for version in re.findall(r'\bGLIBC_(\d+)\.(\d+)\b', versions):
-            if tuple(map(int, version)) > (2, 35):
-                raise RuntimeError('Binary exceeds the Ubuntu 22.04 glibc baseline')
+            if tuple(map(int, version)) > (2, 43):
+                raise RuntimeError('Binary exceeds the Ubuntu 26.04 glibc baseline (2.43)')
     # Relocate the complete archive contents, with library search overrides removed.
     with tempfile.TemporaryDirectory(prefix='tdm-package-check-') as temp:
         relocated = Path(temp) / 'package'

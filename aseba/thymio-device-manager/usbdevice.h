@@ -161,10 +161,9 @@ public:
 
 private:
     friend class usb_device;
-    template <typename MutableBufferSequence>
-    typename MutableBufferSequence::const_iterator
-    read_from_buffer(implementation_type& impl, const typename MutableBufferSequence::const_iterator& begin,
-                     const typename MutableBufferSequence::const_iterator& end, std::size_t& read) {
+    template <typename BufferIterator>
+    BufferIterator read_from_buffer(implementation_type& impl, const BufferIterator& begin,
+                                   const BufferIterator& end, std::size_t& read) {
         usb_device_service::buffer& read_buffer = impl.read_buffer;
         for(auto it = begin; it != end; ++it) {
             if(read_buffer.size() < it->size())
@@ -336,7 +335,7 @@ tl::expected<std::size_t, boost::system::error_code>
 usb_device_service::read_some(implementation_type& impl, const MutableBufferSequence& buffers) {
 
     std::size_t total_read = 0;
-    auto it = read_from_buffer<std::remove_reference_t<decltype(buffers)>>(
+    auto it = read_from_buffer(
         impl, boost::asio::buffer_sequence_begin(buffers), boost::asio::buffer_sequence_end(buffers), total_read);
     for(; it != boost::asio::buffer_sequence_end(buffers); ++it) {
         impl.read_buffer.reserve(it->size(), impl.read_size);
@@ -439,7 +438,7 @@ void usb_device::async_transfer_some(const BufferSequence& buffers, CompletionHa
     std::size_t total_transfered = 0;
 
     if constexpr(TransferDirection::value) {
-        start_it = get_service().read_from_buffer<BufferSequence>(
+        start_it = get_service().read_from_buffer(
             impl, start_it, boost::asio::buffer_sequence_end(buffers), total_transfered);
         if(start_it == boost::asio::buffer_sequence_end(buffers)) {
             boost::asio::post(get_executor(),
@@ -465,7 +464,7 @@ void usb_device::async_transfer_some(const BufferSequence& buffers, CompletionHa
             if constexpr(TransferDirection::value) {
                 detail::commit_buffer(impl, transfer->buffer, transfer->actual_length);
                 usb_device_service& service = d->device.get_service();
-                it = service.read_from_buffer<BufferSequence>(impl, it, boost::asio::buffer_sequence_end(d->seq),
+                it = service.read_from_buffer(impl, it, boost::asio::buffer_sequence_end(d->seq),
                                                               d->total_transfered);
                 d->idx = std::distance(boost::asio::buffer_sequence_begin(d->seq), it);
             } else {

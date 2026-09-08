@@ -6,7 +6,7 @@ results for each platform below. Do not infer hardware success from compilation.
 
 | Platform | USB discovery | Dongle discovery | Reconnection | Compile/run | Firmware update |
 | --- | --- | --- | --- | --- | --- |
-| Ubuntu 22.04 x64 | Pending | Pending | Pending | Pending | Pending |
+| Ubuntu 26.04 x64 | Pending | Pending | Pending | Pending | Pending |
 | macOS Intel | Pending | Pending | Pending | Pending | Pending |
 | macOS Apple Silicon | Pending | Pending | Pending | Pending | Pending |
 | Windows 10/11 x64 | Pending | Pending | Pending | Pending | Pending |

@@ -17,6 +17,11 @@ foreach(name IN ITEMS boost openssl)
 endforeach()
 
 set(host_args)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # The pinned flatc has unused variables in its Rust generator. Newer GCC
+  # diagnoses these, and flatc's own -Werror would stop the bootstrap build.
+  list(APPEND host_args "-DCMAKE_CXX_FLAGS=-Wno-error=unused-but-set-variable")
+endif()
 if(APPLE)
   list(APPEND host_args "-DCMAKE_OSX_ARCHITECTURES=${CMAKE_HOST_SYSTEM_PROCESSOR}")
 endif()
