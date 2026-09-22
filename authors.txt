@@ -1,0 +1,34 @@
+Thymio Device Manager (TDM)
+
+# Authors and contributors
+
+The following people contributed directly to the TDM:
+
+* Corentin Jabot <corentin dot jabot at mobsya dot org> (also cor3ntin)
+  Original implementation, architecture, core development and bug fixes.
+
+* Michael Bonani <michael dot bonani at mobsya dot org>
+  Device discovery, logging, firmware update service, build support and bug fixes.
+
+* Yves Piguet <yves dot piguet at epfl dot ch>
+  IPv4 fallback when IPv6 is unavailable.
+
+* Valentina (ValentinaTibs) <tibaldo dot valentina at gmail dot com>
+  Program bytecode retrieval and serialization.
+
+* Davide Poveromo (podak, davidepoveromo) <podak4a at gmail dot com>
+  MSVC build compatibility and Boost update.
+
+* Matvey Khokhlov <matvey dot khokhlov at epfl dot ch>
+  Dependency updates, timer API compatibility, macOS serial discovery and
+  extraction of the standalone TDM project.
+
+# Source history
+
+This list is based on commits and co-author credits for
+aseba/thymio-device-manager and its earlier aseba/switch path in Mobsya/aseba,
+through commit 743251f62feeec1bffdbe93df2c5cb6749d39756, plus this standalone
+repository's history. See PROVENANCE.md for the source repository details.
+
+The original Aseba-wide authors list is preserved in this file's Git history.
+Credits for inherited Aseba components remain in their source notices.
