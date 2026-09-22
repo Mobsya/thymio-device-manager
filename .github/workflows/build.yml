@@ -1,8 +1,7 @@
 name: Build, test and package
 
 on:
-  push:
-    branches: ['main']
+  workflow_dispatch:
 
 permissions:
   contents: read
