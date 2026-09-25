@@ -53,7 +53,7 @@ namespace usb {
             case error_code::no_memory: return "not enough memory";
             case error_code::not_supported: return "operation not supported";
         }
-        return {};
+        return libusb_error_name(ev);
     }
 
 }  // namespace usb

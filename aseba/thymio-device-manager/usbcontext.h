@@ -1,5 +1,6 @@
 #pragma once
 #include <libusb/libusb.h>
+#include <atomic>
 #include <mutex>
 #include <memory>
 #include <thread>
@@ -14,7 +15,9 @@ namespace details {
     class usb_context {
     public:
         usb_context() {
-            libusb_init(&ctx);
+            const int result = libusb_init(&ctx);
+            if(result != LIBUSB_SUCCESS)
+                throw boost::system::system_error(usb::make_error_code(result), "libusb_init failed");
             m_thread = std::thread([this]() { run(); });
             // libusb_set_debug(ctx, LIBUSB_LOG_LEVEL_DEBUG);
         }
@@ -69,16 +72,15 @@ namespace details {
 
     private:
         void run() {
-            m_running = true;
             timeval tv{7, 0};
             while(m_running) {
                 libusb_handle_events_timeout(ctx, &tv);
             }
         }
 
-        libusb_context* ctx;
+        libusb_context* ctx = nullptr;
         std::thread m_thread;
-        std::atomic_bool m_running;
+        std::atomic_bool m_running{true};
         std::vector<libusb_device*> m_open_devices;
         mutable std::mutex m_device_mutex;
     };

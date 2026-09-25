@@ -7,6 +7,7 @@
 #include <boost/program_options/cmdline.hpp>
 #include <errno.h>
 #include <fstream>
+#include <optional>
 #include "log.h"
 #include <fmt/color.h>
 #include "interfaces.h"
@@ -70,8 +71,15 @@ void run_service(boost::asio::io_context& ctx, const options& opts) {
 	node_registery.set_ws_endpoint(websocket_server.endpoint());
 
 #ifdef MOBSYA_TDM_ENABLE_USB
-    mobsya::usb_server usb_server(ctx, {mobsya::THYMIO2_DEVICE_ID, mobsya::THYMIO_WIRELESS_DEVICE_ID});
-    usb_server.accept();
+    std::optional<mobsya::usb_server> usb_server;
+    try {
+        usb_server.emplace(ctx, std::initializer_list<mobsya::usb_device_identifier>{
+                                    mobsya::THYMIO2_DEVICE_ID, mobsya::THYMIO_WIRELESS_DEVICE_ID});
+    } catch(const boost::system::system_error& e) {
+        mLogWarn("USB monitoring unavailable: {}", e.what());
+    }
+    if(usb_server)
+        usb_server->accept();
 #endif
 #ifdef MOBSYA_TDM_ENABLE_SERIAL
     mobsya::serial_server serial_server(ctx, {mobsya::THYMIO2_DEVICE_ID, mobsya::THYMIO_WIRELESS_DEVICE_ID});

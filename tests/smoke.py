@@ -39,6 +39,13 @@ def main():
             status = daemon.wait(timeout=10)
             assert status == 0 or (os.name == 'nt' and status in [0xC000013A, -1073741510]), status
         except Exception:
+            status = daemon.poll()
+            if status is None:
+                print('Daemon was still running when the smoke test failed', file=sys.stderr)
+            elif os.name != 'nt' and status < 0:
+                print(f'Daemon terminated by {signal.Signals(-status).name} ({status})', file=sys.stderr)
+            else:
+                print(f'Daemon exited with status {status}', file=sys.stderr)
             log.seek(0)
             print(log.read().decode(errors='replace'), file=sys.stderr)
             raise
