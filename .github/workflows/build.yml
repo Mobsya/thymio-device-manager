@@ -29,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        shell: bash
+        shell: ${{ matrix.preset == 'windows-x64' && 'pwsh' || 'bash' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -57,10 +57,27 @@ jobs:
           foreach ($line in $environment) {
             if ($line -match '^([^=]+)=(.*)$') { "$($Matches[1])=$($Matches[2])" >> $env:GITHUB_ENV }
           }
+          # Git Bash can put its own Perl ahead of Strawberry on PATH.
+          $perl = 'C:\Strawberry\perl\bin\perl.exe'
+          & $perl -MLocale::Maketext::Simple -MIPC::Cmd -e 'die "Expected native Windows Perl\n" unless $^O eq "MSWin32"; print "$^X\n";'
+          if ($LASTEXITCODE -ne 0) { throw 'Strawberry Perl prerequisite check failed' }
+          "PERL=$perl" >> $env:GITHUB_ENV
+      - name: Verify Windows compiler and linker selection
+        if: runner.os == 'Windows'
+        run: |
+          $msvcBin = Join-Path $env:VCToolsInstallDir 'bin\Hostx64\x64'
+          foreach ($tool in @('cl', 'link', 'lib', 'nmake')) {
+            # Only the first PATH match determines which executable is selected.
+            $actual = (Get-Command "$tool.exe" -CommandType Application -ErrorAction Stop |
+              Select-Object -First 1).Source
+            $expected = Join-Path $msvcBin "$tool.exe"
+            if ($actual -ne $expected) { throw "Expected $expected, but PATH selects $actual" }
+            Write-Host "$tool`: $actual"
+          }
       - name: Dependency cache identity
         id: toolchain
+        shell: python
         run: |
-          python - <<'PY'
           import hashlib, os, platform, subprocess
           values = [os.environ.get('ImageVersion', ''), os.environ.get('VCToolsVersion', ''), platform.machine()]
           for command in [['cmake', '--version'], ['ninja', '--version']]:
@@ -69,7 +86,6 @@ jobs:
           values.append(subprocess.run(compiler, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True).stdout)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
               out.write('identity=' + hashlib.sha256('\n'.join(values).encode()).hexdigest()[:20] + '\n')
-          PY
       - uses: actions/cache@v6
         with:
           path: |

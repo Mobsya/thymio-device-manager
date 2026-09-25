@@ -13,7 +13,8 @@ using tcp = asio::ip::tcp;
 void verify(const std::vector<uint8_t>& bytes, fb::AnyMessage type) {
     flatbuffers::Verifier verifier(bytes.data(), bytes.size());
     if (!fb::VerifyMessageBuffer(verifier)) throw std::runtime_error("Invalid FlatBuffer response");
-    auto message = fb::GetMessage(bytes.data());
+    // Use GetRoot directly to avoid the Windows GetMessage macro.
+    auto message = flatbuffers::GetRoot<fb::Message>(bytes.data());
     if (message->message_type() != type) throw std::runtime_error("Unexpected response type");
     if (type == fb::AnyMessage::ConnectionHandshake) {
         const auto* hs = message->message_as_ConnectionHandshake();

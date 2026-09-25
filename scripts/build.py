@@ -94,9 +94,11 @@ def deps(preset, jobs):
         shutil.rmtree(prefix, ignore_errors=True)
     build_dir.mkdir(parents=True, exist_ok=True)
     stamp.write_text(fingerprint)
+    # These cache values are embedded in generated CMake source, where native
+    # Windows backslashes would be interpreted as escape sequences.
     run(['cmake', '-S', ROOT / 'cmake/bootstrap', '-B', build_dir, '-G', 'Ninja',
-         '-DCMAKE_BUILD_TYPE=Release', '-DTDM_DOWNLOAD_DIR=' + str(DOWNLOADS),
-         '-DTDM_DEPS_PREFIX=' + str(prefix), '-DTDM_ARCH=' + arch,
+         '-DCMAKE_BUILD_TYPE=Release', '-DTDM_DOWNLOAD_DIR=' + DOWNLOADS.as_posix(),
+         '-DTDM_DEPS_PREFIX=' + prefix.as_posix(), '-DTDM_ARCH=' + arch,
          '-DTDM_MACOS_MIN=11.0'])
     # Each dependency may use JOBS itself: don't multiply memory use by running all three at once.
     env = os.environ.copy()

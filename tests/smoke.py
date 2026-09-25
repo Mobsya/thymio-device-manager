@@ -38,6 +38,9 @@ def main():
             daemon.send_signal(signal.CTRL_BREAK_EVENT if os.name == 'nt' else signal.SIGTERM)
             status = daemon.wait(timeout=10)
             assert status == 0 or (os.name == 'nt' and status in [0xC000013A, -1073741510]), status
+            log.seek(0)
+            output = log.read().decode(errors='replace')
+            assert 'Starting...' in output, f'Daemon startup log missing from redirected file: {output!r}'
         except Exception:
             status = daemon.poll()
             if status is None:

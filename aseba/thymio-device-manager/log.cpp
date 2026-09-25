@@ -1,11 +1,23 @@
 #include "log.h"
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/stdout_sinks.h>
 #include <boost/utility/string_view.hpp>
 #include <fmt/format.h>
 
+#ifdef _WIN32
+#    include <windows.h>
+#endif
 
 auto get_logger() {
+#ifdef _WIN32
+    // This spdlog version's color sink uses WriteConsole, which cannot write to pipes or files.
+    DWORD console_mode = 0;
+    auto log = ::GetConsoleMode(::GetStdHandle(STD_OUTPUT_HANDLE), &console_mode)
+                   ? spdlog::stdout_color_mt("console")
+                   : spdlog::stdout_logger_mt("console");
+#else
     auto log = spdlog::stdout_color_mt("console");
+#endif
     log->set_level(spdlog::level::trace);
     log->flush_on(spdlog::level::trace);
     return log;

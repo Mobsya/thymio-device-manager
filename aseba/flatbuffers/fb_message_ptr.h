@@ -11,7 +11,8 @@ public:
         other.m_msg = nullptr;
     }
     fb_message_ptr(std::vector<uint8_t>&& data) : m_data(std::move(data)) {
-        m_msg = fb::GetMessage(m_data.data());
+        // Use GetRoot directly to avoid the Windows GetMessage macro.
+        m_msg = flatbuffers::GetRoot<fb::Message>(m_data.data());
     }
 
     operator bool() const {

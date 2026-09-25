@@ -4,6 +4,8 @@ add_subdirectory(thymio-device-manager)
 add_executable(tst_compiler compiler.cpp thymio-device-manager/runner.cpp)
 target_link_libraries(tst_compiler PRIVATE asebacompiler catch2)
 add_test(NAME compiler COMMAND tst_compiler)
+add_test(NAME dependency-build-environment COMMAND "${Python3_EXECUTABLE}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_build_dependency.py")
 add_executable(protocol-probe protocol.cpp)
 target_link_libraries(protocol-probe PRIVATE thymio-flatbuffers Boost::asio)
 if(WIN32)

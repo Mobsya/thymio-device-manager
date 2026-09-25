@@ -57,10 +57,16 @@ def main():
         run(command, source, env)
     else:
         target = 'VC-WIN64A' if windows else ('darwin64-' + args.arch + '-cc' if mac else 'linux-x86_64')
-        command = ['perl', str(source / 'Configure'), target, 'no-shared', 'no-module', 'no-tests',
+        perl = env.get('PERL', 'perl')
+        command = [perl, str(source / 'Configure'), target, 'no-shared', 'no-module', 'no-tests',
                    '--prefix=' + str(prefix), '--libdir=lib']
         if windows:
-            command += ['-static']
+            # VC-WIN64A with no-shared already selects /MT. The Unix -static
+            # option would be passed through to Microsoft's linker.
+            # GNU Make's exported flags (including its "--" separator) are not
+            # valid NMAKE options. Keep them out of Configure and recursive NMAKE.
+            for name in ['MAKE', 'MAKEFLAGS', 'MFLAGS', 'MAKELEVEL', 'MAKEOVERRIDES', 'GNUMAKEFLAGS']:
+                env.pop(name, None)
         elif mac:
             command += ['-mmacosx-version-min=' + args.deployment_target]
         else:

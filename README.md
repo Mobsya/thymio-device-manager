@@ -88,14 +88,18 @@ It executes the package startup check on the host architecture. CI tests each
 architecture natively and tests the combined executable on both.
 
 Windows: install Visual Studio 2022 Build Tools with Desktop development with C++,
-Python, CMake, Ninja, GNU Make, Perl and NASM. Put them on PATH and run in an **x64
+Python, CMake, Ninja, GNU Make, Strawberry Perl and NASM. Put them on PATH and run in an **x64
 Native Tools Command Prompt for VS 2022**:
 
 ```bat
+set "PERL=C:\Strawberry\perl\bin\perl.exe"
 make deps PYTHON=python JOBS=4
 make test PYTHON=python JOBS=4
 make package PYTHON=python JOBS=4
 ```
+
+Adjust `PERL` if Strawberry Perl is installed elsewhere. This selects the native
+Windows interpreter even when Git Bash's Perl is also on PATH.
 
 Install/start Bonjour before `make test`. GNU Make is only the command interface;
 the compiler is MSVC, not MinGW. Python can also invoke every action directly:
